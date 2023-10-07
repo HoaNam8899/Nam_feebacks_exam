@@ -19,22 +19,26 @@ function App() {
       })
   }
   useEffect(() => { fetchData() }, [])
+
+
   /// post /////////////////////////////////////////
   const [postData, setPostData] = useState({
-    content: "nhập gì đó đi, 0 điểm nha",
+    content: "Nhập gì đó đi",
     point: 0
   });
   const createNew = (e) => {
-    setPostData({
-      ...postData, content: e.target.value
+    setPostData(s => ({
+      ...s, content: e.target.value
     })
+    )
   }
   const setPoint = (e) => {
-    setPostData({
-      ...postData, point: e.target.id
-    })
+    setPostData(s => ({
+      ...s, point: +e.target.id
+    }))
 
   }
+
   const sendFeedback = async (e) => {
     e.preventDefault();
     try {
@@ -50,14 +54,19 @@ function App() {
       console.log(error);
     }
     fetchData();
+    setPostData(s => ({
+      ...s, point: 0
+    }))
   }
+
+
   //// edit ////////////////////////////////////////////
   const [valueEdit, setValueEdit] = useState({});
   const editContent = async (e, id) => {
     e.preventDefault();
     let dataEdit = data.find((e, i) => e.id === +id);
     setValueEdit(dataEdit);
-    console.log(dataEdit);
+    // console.log(dataEdit);
   }
   const changeFeedback = async (e) => {
     e.preventDefault();
@@ -85,10 +94,24 @@ function App() {
     setValueEdit({
       ...valueEdit, content: e.target.value
     })
-
   }
-
-
+  //// delete //////////////////////////////
+  const deleteFeedback = async (e, id) => {
+    alert("Delete?")
+    try {
+      let res = await fetch(`http://localhost:3000/api/v1/feedbacks/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+          }
+        }
+      )
+    } catch {
+      console.log("error")
+    }
+    fetchData();
+  }
   return (
     <div className="App">
       <div className="Navbar">Feedback TA</div>;
@@ -139,6 +162,7 @@ function App() {
                 <span className="point">{d.point}</span>
                 <div className="action-container">
                   <button onClick={(e) => editContent(e, d.id)}>Edit</button>
+                  <button className='close' onClick={(e) => deleteFeedback(e, d.id)}>x</button>
                 </div>
               </div>
             )}

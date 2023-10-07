@@ -25,8 +25,8 @@ router.patch("/:id", (req, res) => {
     let { id } = req.params
     let data = JSON.parse(fs.readFileSync(`${__dirname}/../data/feedbacks.json`));
 
-    let feedback = data.findIndex((e, i) => e.id === +id);
-    data[feedback].content = req.body.content;
+    let feedbackIndex = data.findIndex((e, i) => e.id === +id);
+    data[feedbackIndex].content = req.body.content;
     fs.writeFileSync(`${__dirname}/../data/feedbacks.json`, JSON.stringify(data));
     res.json({
         message: "Edit successfully"
@@ -34,8 +34,12 @@ router.patch("/:id", (req, res) => {
 });
 router.delete("/:id", (req, res) => {
     let { id } = req.params
+    let data = JSON.parse(fs.readFileSync(`${__dirname}/../data/feedbacks.json`));
+    let feedbackIndex = data.findIndex((e, i) => e.id === +id);
+    data.splice(feedbackIndex, 1);
+    fs.writeFileSync(`${__dirname}/../data/feedbacks.json`, JSON.stringify(data));
     res.json({
-        message: "delete id" + id
+        message: "Deleted"
     })
 });
 
